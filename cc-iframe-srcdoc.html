@@ -1,0 +1,25 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+<script src="origin.js"></script>
+</head>
+<body>
+    <h1>Instructions</h1>
+
+    <h2>Test 1</h2>
+    <ol>
+      <li class="act">Focus the "expiration date" field.</li>
+      <li class="exp">A credit card suggestion appears. <img src="exp-preview-srcdoc.png"></li>
+      <li class="act">Select the suggested credit card.</li>
+      <li class="exp">All fields (WebView: except for the "CVC" field) are filled. <img src="exp-fill-srcdoc.png"></li>
+    </ol>
+
+    <hr>
+
+  <form action="https://example.com/" method="POST">
+    <iframe srcdoc='<html> <link rel="stylesheet" href="style.css"> <script src="origin.js"></script><body> <label for="creditcard-number">Cardholder name:</label><input type="text" id="creditcard-name"> </body> </html>'></iframe><br>
+    <iframe srcdoc='<html> <link rel="stylesheet" href="style.css"> <script src="origin.js"></script><body> <div id="left"><label for="creditcard-number">Credit card number:</label><input type="text" id="creditcard-number"> </body> </html>'></iframe><br>
+    <iframe srcdoc='<html> <link rel="stylesheet" href="style.css"> <script src="origin.js"></script><body> <div id="left"><label for="creditcard-date">Expiry date:</label><input type="text" id="creditcard-date"> </body> </html>'></iframe><br>
+    <iframe srcdoc='<html> <link rel="stylesheet" href="style.css"> <script src="origin.js"></script><body> <div id="left"><label for="cvc">CVC:</label><input type="text" id="cvc"> </body> </html>'></iframe><br>
+    <input type="submit">
+  </form>

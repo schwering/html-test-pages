@@ -1,0 +1,42 @@
+<html>
+<body>
+<script>
+const sites = [
+  'https://en.wikipedia.org/wiki/List_of_most_popular_websites',
+  'https://mail.google.com',
+  'https://twitter.com/elonmusk',
+  'https://www.adobe.com',
+  'https://www.baidu.com',
+  'https://www.cnn.com',
+  'https://www.facebook.com',
+  'https://www.faz.net',
+  'https://www.foxnews.com',
+  'https://www.google.com',
+  'https://www.google.com/search?q=hello',
+  'https://www.idealo.com',
+  'https://www.instagram.com/kimkardashian/',
+  'https://www.nytimes.com',
+  'https://www.otto.de',
+  'https://www.quelle.de',
+  'https://www.smh.com.au',
+  'https://www.sueddeutsche.de',
+  'https://www.yahoo.com',
+  'https://www.youtube.com',
+  'https://www.youtube.com/watch?v=ZYMpObbt2rs',
+  'https://www.yr.no',
+  'https://www.yy.com',
+];
+let frame = undefined;
+let i = 0;
+(function loop() {
+  if (frame)
+    frame.close();
+  if (i >= sites.length)
+    return;
+  console.log('Loading ' + sites[i]);
+  frame = window.open(sites[i], 'child' + i);
+  ++i;
+  setTimeout(loop, 30000);
+})();
+</script>
+

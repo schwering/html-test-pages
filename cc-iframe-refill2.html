@@ -1,0 +1,52 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+<script src="origin.js"></script>
+</head>
+<body>
+    <h1>Instructions</h1>
+
+    <h2>Test 1</h2>
+    <p>Not applicable for WebView (which apparently has no refill logic).</p>
+    <ol>
+      <li class="act">Focus the "credit card number" field.</li>
+      <li class="exp">A credit card suggestion appears. <img src="exp-preview-refill2.png"></li>
+      <li class="act">Select the suggested credit card.</li>
+      <li class="exp">The "expiration date field has been added and all fields (including the expiration date field) are filled. <img src="exp-fill-refill.png"></li>
+    </ol>
+
+    <h2>Test 2</h2>
+    <ol>
+      <li class="act">Manually fill the form.</li>
+      <li class="act">Press the submit button.</li>
+      <li class="exp">Import popup occurs. <img src="exp-import.png"></li>
+      <li class="act">Go to <code>chrome://settings/clearBrowserData</code> and clear the last hour of browsing data and close the tab.</li>
+    </ol>
+
+    <hr>
+
+  <form action="https://example.com/" method="POST" target="_parent">
+    <iframe src="cc-field-name.html"></iframe><br>
+    <iframe src="cc-field-num.html"></iframe><br>
+    <iframe src="cc-field-cvc.html"></iframe><br>
+    <input type="submit">
+  </form>
+  <script>
+    const iframes = document.getElementsByTagName("iframe");
+    const form = document.getElementsByTagName("form")[0];
+    const cvc = iframes[iframes.length - 1];
+    (function f() {
+      for (const iframe of iframes) {
+        for (const input of iframe.contentWindow.document.getElementsByTagName("input")) {
+          if (input.value !== "") {
+            cvc.insertAdjacentHTML('beforebegin', '<iframe src="cc-field-exp.html"></iframe><br>');
+            return;
+          }
+        }
+      }
+      setTimeout(f, 50);
+    })();
+  </script>
+</body>
+</html>
+

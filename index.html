@@ -1,0 +1,32 @@
+<html>
+<link rel="stylesheet" href="style.css">
+<script src="origin.js"></script>
+<body>
+  <h1>Testcases</h1>
+  <ul>
+  <script>
+const cases = [
+    "cc-mainframe.html",
+    "cc-iframe-all.html",
+    "cc-iframe-allow.html",
+    "cc-iframe-allow2.html",
+    "cc-iframe-formless.html",
+    "cc-iframe-refill.html",
+    "cc-iframe-refill2.html",
+    "cc-iframe-removal-after-click.html",
+    "cc-iframe-navigation-after-click.html",
+    "cc-iframe-srcdoc.html",
+  ];
+for (const c of cases) {
+  document.writeln(`<li><a href="${c}">${c.replaceAll(/^.*(cc|iframe)-/g, '').replaceAll('.html', '')}</a>`);
+}
+document.writeln(`</ul><ul>`);
+for (const c of cases) {
+  document.writeln(`<li><a href="wrap-in-iframe.html?${c}">nested ${c.replaceAll(/^.*(cc|iframe)-/g, '').replaceAll('.html', '')}</a>`);
+}
+  </script>
+  <ul>
+</body>
+</html>
+
+

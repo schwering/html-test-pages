@@ -1,0 +1,31 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+<script src="origin.js"></script>
+</head>
+<body>
+    <h1>Instructions</h1>
+
+    <h2>Test 1</h2>
+    <ol>
+      <li class="act">Focus the "cardholder name" field.</li>
+      <li class="exp">A credit card suggestion appears. <img src="exp-preview-all.png"></li>
+      <li class="act">Select the suggested credit card.</li>
+      <li class="exp">The "name on card", the "cardholder name", first "credit card number", the "expiration date", and  (unless WebView:) the "CVC" fields are filled, but the bottom two, colourful "credit card number fields" are left empty. <img src="exp-fill-all.png"></li>
+    </ol>
+
+    <hr>
+
+  <form action="https://example.com/" method="POST" target="_parent">
+    <div><label for="creditcard-name">Name on card:</label><input type="text" id="creditcard-name"></div>
+    <iframe src="cc-field-name.html"></iframe><br>
+    <iframe src="cc-field-nested-num.html"></iframe><br>
+    <iframe sandbox="allow-scripts" src="cc-field-nested-num.html"></iframe><br>
+    <iframe sandbox="allow-scripts" allow="shared-autofill" src="cc-field-nested-num.html"></iframe><br>
+    <iframe src="cc-field-nested-exp.html"></iframe><br>
+    <iframe src="cc-field-cvc.html"></iframe><br>
+    <input type="submit">
+  </form>
+</body>
+</html>
+

@@ -1,0 +1,49 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+<style>
+iframe { height: 5ex; width: 50em; }
+</style>
+<script src="origin.js"></script>
+</head>
+<body>
+    <h1>Instructions</h1>
+
+    <h2>Test 1</h2>
+    <ol>
+      <li class="act">Focus the "cardholder name" field.</li>
+      <li class="exp">A credit card suggestion appears. <img src="exp-preview-allow-1.png"></li>
+      <li class="act">Select the suggested credit card.</li>
+      <li class="exp">All fields (WebView: except for the "CVC" field) are filled. <img src="exp-fill-allow-1.png"></li>
+    </ol>
+
+    <h2>Test 2</h2>
+    <p>Not applicable for WebView (which apparently does not offer suggestions on expiration date fields).</p>
+    <ol>
+      <li class="act">Focus the "expiration date" field.</li>
+      <li class="exp">A credit card suggestion appears. <img src="exp-preview-allow-2.png"></li>
+      <li class="act">Select the suggested credit card.</li>
+      <li class="exp">(Only) the cardholder name and the expiration date fields are filled. <img src="exp-fill-allow-2.png"></li>
+    </ol>
+
+    <h2>Test 3</h2>
+    <ol>
+      <li class="act">Manually fill the form.</li>
+      <li class="act">Press the submit button.</li>
+      <li class="exp">Import popup occurs. <img src="exp-import.png"></li>
+      <li class="act">Go to <code>chrome://settings/clearBrowserData</code> and clear the last hour of browsing data and close the tab.</li>
+    </ol>
+
+    <hr>
+
+  <form action="https://example.com/" method="POST" target="_parent">
+    <iframe src="cc-field-name.html"></iframe><br>
+    <iframe src="cc-field-num.html"></iframe><br>
+    <iframe src="cc-field-exp.html" sandbox="allow-scripts" allow="shared-autofill"></iframe><br>
+    <iframe src="cc-field-cvc.html" sandbox="allow-scripts" allow="shared-autofill"></iframe><br>
+    <input type="submit">
+  </form>
+</body>
+</html>
+
+

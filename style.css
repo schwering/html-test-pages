@@ -1,0 +1,11 @@
+body { font-family: sans-serif; padding: .25ex; }
+div.button { display: inline-block; padding: 2pt; border: 1px solid black; background-color: lightgrey; cursor: hand; }
+li.act::before { color: blue; font-style: italic; content: "Action: " }
+li.exp { cursor: hand; }
+li.exp::before { color: green; font-style: italic; content: "Expectation: " }
+li.exp > img { display: none; position: absolute; border: 0.5ex solid black; border-radius: 1ex; background-color: black; }
+li.exp:hover > img { display: block; }
+iframe { width: 80%; overflow: auto; }
+iframe.sandbox { border: 5pt solid red; }
+iframe.allow { border: 5pt dotted green; }
+hr { border: 0; border-bottom: 0.25ex solid black; margin-top: 5ex; margin-bottom: 5ex; }

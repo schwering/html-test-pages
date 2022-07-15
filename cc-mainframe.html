@@ -1,0 +1,40 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+<style>
+iframe { height: 5ex; width: 50em; }
+</style>
+<script src="origin.js"></script>
+</head>
+<body>
+    <h1>Instructions</h1>
+
+    <h2>Test 1</h2>
+    <ol>
+      <li class="act">Focus the "cardholder name" field.</li>
+      <li class="exp">A credit card suggestion appears. <img src="exp-preview-mainframe.png"></li>
+      <li class="act">Select the suggested credit card.</li>
+      <li class="exp">All fields (WebView: except for the "CVC" field) are filled. <img src="exp-fill-mainframe.png"></li>
+    </ol>
+
+    <h2>Test 2</h2>
+    <ol>
+      <li class="act">Manually fill the form.</li>
+      <li class="act">Press the submit button.</li>
+      <li class="exp">Import popup occurs. <img src="exp-import.png"></li>
+      <li class="act">Go to <code>chrome://settings/clearBrowserData</code> and clear the last hour of browsing data and close the tab.</li>
+    </ol>
+
+    <hr>
+
+  <form action="https://example.com/" method="POST" target="_parent">
+    <label for="creditcard-name">Cardholder name:</label><input type="text" id="creditcard-name"><br>
+    <label for="creditcard-number">Credit card number:</label><input type="text" id="creditcard-number"><br>
+    <label for="creditcard-date">Expiration date:</label><input type="text" id="creditcard-date"><br>
+    <label for="cvc">CVC:</label><input type="text" id="cvc"><br>
+    <input type="submit">
+  </form>
+</body>
+</html>
+
+

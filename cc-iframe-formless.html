@@ -1,0 +1,42 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+<script src="origin.js"></script>
+<script>window.onload = function() { init(true); };</script>
+</head>
+<body>
+    <h1>Instructions</h1>
+
+    <h2>Test 1</h2>
+    <ol>
+      <li class="act">Click the below button.</li>
+      <li class="act">Focus the "cardholder name" field.</li>
+      <li class="act">If no suggestions appear, focus the "credit card number" field.</li>
+      <li class="exp">A credit card suggestion appears. <img src="exp-preview-formless.png"></li>
+      <li class="act">Select the suggested credit card.</li>
+      <li class="exp">All fields (WebView: except for the "CVC" field) are filled. <img src="exp-fill-formless.png"></li>
+    </ol>
+
+    <h2>Test 2</h2>
+    <ol>
+      <li class="act">Click the below button.</li>
+      <li class="act">Manually fill the form.</li>
+      <li class="act">Press the submit button.</li>
+      <li class="exp">Import popup occurs. <img src="exp-import.png"></li>
+      <li class="act">Go to <code>chrome://settings/clearBrowserData</code> and clear the last hour of browsing data and close the tab.</li>
+    </ol>
+
+    <hr>
+
+    <div class="button" onclick="(function() { for (const input of document.getElementsByTagName('input')) input.style.display = 'block'; for (const iframe of document.getElementsByTagName('iframe')) iframe.style.display = 'block'; })();">Click to make frames visible</div>
+
+    <hr>
+
+    <iframe style="display:none;" src="cc-field-name.html"></iframe><br>
+    <iframe style="display:none;" src="cc-field-num.html"></iframe><br>
+    <iframe style="display:none;" src="cc-field-exp.html"></iframe><br>
+    <iframe style="display:none;" src="cc-field-cvc.html"></iframe><br>
+    <input style="display:none;" type="submit" onclick="(function() { window.location = 'index.html'; })();">
+</body>
+</html>
+

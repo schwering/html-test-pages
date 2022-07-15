@@ -1,0 +1,53 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+<script src="origin.js"></script>
+</head>
+<body>
+    <h1>Instructions</h1>
+
+    <h2>Test 1</h2>
+    <ol>
+      <li class="act">Focus the "credit card number" field.</li>
+      <li class="exp">A credit card suggestion appears. <img src="exp-preview-removal.png"></li>
+      <li class="act">Wait for the progress bar to be fully blue.</li>
+      <li class="exp">The browser has navigated away from the page and the Autofill popup is closed.</li>
+    </ol>
+
+    <hr>
+
+  <form action="https://example.com/" method="POST">
+    <div><label for="creditcard-name">Cardholder name:</label><input type="text" id="creditcard-name"></div>
+    <iframe src="cc-field-num.html"></iframe><br>
+    <iframe src="cc-field-exp.html"></iframe><br>
+    <iframe src="cc-field-cvc.html"></iframe><br>
+    <input type="submit">
+  </form>
+  <div style="display:inline-block; width:100%; background-color:darkgrey; height:5ex;"><div id="timer" style="display:inline-block; background-color:blue; height:100%; width:0%;"></div></div>
+  <script>
+    const pause = 2000;
+    let spin = 0;
+    (function checkFocus() {
+      for (const iframe of document.getElementsByTagName('iframe')) {
+        if (document.activeElement === iframe && spin === 0) {
+          const timer = document.getElementById('timer');
+          (function navigateIframe() {
+            if (spin >= 100) {
+              const href = window.location.href;
+              window.location.href = href.substr(0, href.lastIndexOf('/'));
+              spin = -1;
+            } else {
+              spin += 1;
+              timer.style.width = `${spin}%`;
+              setTimeout(navigateIframe, pause / 100.0);
+            }
+          })();
+        }
+      }
+      setTimeout(checkFocus, 500);
+    })();
+  </script>
+</body>
+</html>
+
+
