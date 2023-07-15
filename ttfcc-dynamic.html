@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<body>
+  <input autocomplete=cc-number><br>
+  <iframe sandbox srcdoc="<input autocomplete=cc-number>" style="height: 5ex; width: 20em;"></iframe><br>
+  <iframe sandbox srcdoc="<input autocomplete=cc-exp>" style="height: 5ex; width: 20em;"></iframe><br>
+  <script>
+  window.onblur = function() {
+    //document.body.innerHTML  += `<input autocomplete=cc-csc><br>`;
+    window.onblur = function() {};
+  }
+  </script>
