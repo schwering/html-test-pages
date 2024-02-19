@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<style>
+body { font-family: sans-serif; }
+.foo { color: #333; padding: 1em; margin: 1em; background: #ffea61; box-shadow: 0 0 0.5em #999; }
+</style>
+
+<h1>Keyboard events</h1>
+<div class="foo">
+  <a href="#">Links</a><br>
+  <a href="#">Rechts</a>
+</div>
+
+<div class="foo">
+  Input text:<br>
+  <a href="#">Links</a><br>
+  <input><br>
+  <a href="#">Rechts</a>
+</div>
+<div class="foo">
+  Input checkbox:<br>
+  <a href="#">Links</a><br>
+  <input type=checkbox><br>
+  <a href="#">Rechts</a>
+</div>
+<div class="foo">
+  Select:<br>
+  <a href="#">Links</a><br>
+  <select><option>110</option><option>111</option><option>112</option></select>
+  <a href="#">Rechts</a>
+</div>
+<div class="foo">
+  Textarea:<br>
+  <a href="#">Links</a><br>
+  <textarea></textarea><br>
+  <a href="#">Rechts</a>
+</div>
+<div class="foo">
+  Contenteditable:<br>
+  <a href="#">Links</a><br>
+  <div contenteditable style="border: 1px solid black; width: 5em; height: 5em; background-color: white; padding: 0.5ex;"></div>
+  <a href="#">Rechts</a>
+</div>
+
+<div class="foo" style="font-family: monospace; white-space: pre;">
+  <b>Log</b>
+  <div id="log"></div>
+  <hr>
+  <button onclick="javascript:document.getElementById('log').innerText = '';" accesskey="c">Clear</button>
+</div>
+
+
+<script>
+  function str(e) {
+    const s = e.toString();  
+    return s.replace(/\[object (\w+)\]/, (s, p) => p) || s;
+  }
+
+  function charCode(s) {
+    if (!s) return '';
+    return '0x'+ s.charCodeAt(0).toString(16);
+  }
+  
+  const log = document.getElementById('log');
+  
+  function handler(e) {
+    const msg = `${e.type} eventPhase='${e.eventPhase}' key='${e.key || ''}' code=${charCode(e.key)} value='${e.target.value || ''}' target='${str(e.target)}' currentTarget='${str(e.currentTarget)}'`;
+    console.log(msg);
+    const div = document.createElement('div');
+    div.innerText = msg;
+    log.insertBefore(div, log.firstElementChild);
+    //e.stopPropagation();
+    //e.preventDefault();
+  }
+  
+  for (const target of [window, document, ...document.all]) {
+    target.addEventListener('click', handler, true);
+    target.addEventListener('keydown', handler, true);
+    target.addEventListener('keydown', handler, false);
+    target.addEventListener('keyup', handler, true);
+    target.addEventListener('keyup', handler, false);
+    target.addEventListener('beforeinput', handler, true);
+    target.addEventListener('beforeinput', handler, false);
+    target.addEventListener('input', handler, true);
+    target.addEventListener('input', handler, false);
+    target.addEventListener('keypress', handler, true);
+    target.addEventListener('keypress', handler, false);
+  }
+</script>
