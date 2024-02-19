@@ -4,9 +4,14 @@
 <style>
 body { font-family: sans-serif; }
 .foo { color: #333; padding: 1em; margin: 1em; background: #ffea61; box-shadow: 0 0 0.5em #999; }
+label { display: block; }
 </style>
 
 <h1>Keyboard events</h1>
+
+<div class="foo" id="setup">
+</div>
+
 <div class="foo">
   <a href="#">Links</a><br>
   <a href="#">Rechts</a>
@@ -52,39 +57,70 @@ body { font-family: sans-serif; }
 
 
 <script>
-  function str(e) {
-    const s = e.toString();  
+  function getClassName(e) {
+    const s = e.toString();
     return s.replace(/\[object (\w+)\]/, (s, p) => p) || s;
   }
 
+  function str(s) {
+    if (s === undefined || s === null) return 'n/a';
+    return "'" + s + "'";
+  }
+
   function charCode(s) {
-    if (!s) return '';
+    if (!s) return undefined;
     return '0x'+ s.charCodeAt(0).toString(16);
   }
-  
+
   const log = document.getElementById('log');
-  
+  const setup = document.getElementById('setup');
+
+  function addCheckbox(text, checked) {
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = checked;
+    const label = document.createElement('label');
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(text));
+    setup.appendChild(label);
+    return function() {
+      return checkbox.checked;
+    };
+  }
+
+  const shouldStopPropagation = addCheckbox('stopPropagation()', false);
+  const shouldPreventDefault = addCheckbox('preventDefault()', false);
+
   function handler(e) {
-    const msg = `${e.type} eventPhase='${e.eventPhase}' key='${e.key || ''}' code=${charCode(e.key)} value='${e.target.value || ''}' target='${str(e.target)}' currentTarget='${str(e.currentTarget)}'`;
+    for (let p = e.target; p; p = p.parentElement) {
+      if (p === setup) {
+        return;
+      }
+    }
+    const msg = ['type', 'eventPhase', 'key', 'code', 'location', 'data'].filter(x => x in e).map(x => x +'='+ str(e[x])).join(' ') +
+                ` value=${str(e.target.value)} target='${getClassName(e.target)}' currentTarget='${getClassName(e.currentTarget)}'`;
     console.log(msg);
     const div = document.createElement('div');
     div.innerText = msg;
     log.insertBefore(div, log.firstElementChild);
-    //e.stopPropagation();
-    //e.preventDefault();
+    if (shouldStopPropagation()) {
+      e.stopPropagation();
+    }
+    if (shouldPreventDefault()) {
+      e.preventDefault();
+    }
   }
-  
-  for (const target of [window, document, ...document.all]) {
-    target.addEventListener('click', handler, true);
-    target.addEventListener('keydown', handler, true);
-    target.addEventListener('keydown', handler, false);
-    target.addEventListener('keyup', handler, true);
-    target.addEventListener('keyup', handler, false);
-    target.addEventListener('beforeinput', handler, true);
-    target.addEventListener('beforeinput', handler, false);
-    target.addEventListener('input', handler, true);
-    target.addEventListener('input', handler, false);
-    target.addEventListener('keypress', handler, true);
-    target.addEventListener('keypress', handler, false);
+
+  for (const type of ['click', 'keydown', 'beforeinput', 'input', 'keyup', 'keypress']) {
+    const checked = addCheckbox(type, true);
+    for (const target of [window, document, ...document.all]) {
+      function h(e) {
+        if (checked()) {
+          handler(e);
+        }
+      }
+      target.addEventListener(type, h, true);
+      target.addEventListener(type, h, false);
+    }
   }
 </script>
