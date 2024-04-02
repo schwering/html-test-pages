@@ -1,0 +1,57 @@
+<html>
+<body>
+  <form action=. method="GET">
+    <div><label>Name on card: <input type="text"></label></div>
+    <div><label>Credit card number: <input type="text"></label></div>
+    <div><label>Expiration date:
+        <select autocomplete=cc-exp-month>
+          <option value=01>Jan</option>
+          <option value=02>Feb</option>
+          <option value=03>March</option>
+          <option value=04>April</option>
+          <option value=05>May</option>
+          <option value=06>June</option>
+          <option value=07>July</option>
+          <option value=08>August</option>
+          <option value=09>September</option>
+          <option value=10>October</option>
+          <option value=11>November</option>
+          <option value=12>December</option>
+        </select>
+        <select autocomplete=cc-exp-year>
+          <option value=2023>2023</option>
+          <option value=2024>2024</option>
+          <option value=2025>2025</option>
+          <option value=2026>2026</option>
+          <option value=2027>2027</option>
+          <option value=2028>2028</option>
+          <option value=2029>2029</option>
+          <option value=2030>2030</option>
+          <option value=2031>2031</option>
+          <option value=2032>2032</option>
+        </select>
+    <div><label>CVC: <input type="text" autocomplete="cc-csc"></label></div>
+    <input type="submit">
+    <input type="reset">
+    <input type="button" id="setvalue" value="SetValue">
+    <input type="button" id="change" value="Change">
+    <input type="button" id="reparse" value="Reparse">
+    <script>
+document.getElementById('setvalue').onclick = function() {
+  const input = document.forms[0].elements[0];
+  input.value += 'foo';
+}
+document.getElementById('change').onclick = function() {
+  const input = document.forms[0].elements[0];
+  input.dispatchEvent(new Event('change'));
+}
+document.getElementById('reparse').onclick = function() {
+  const input = document.createElement('input');
+  input.style.display = 'none';
+  document.forms[0].appendChild(input);
+}
+    </script>
+  </form>
+</body>
+</html>
+
