@@ -1,0 +1,24 @@
+<form action="?" method="GET">
+  First name: <input type=text autocomplete=given-name list=l><br>
+  Last name: <input type=text autocomplete=family-name><br>
+  ZIP: <input type=text autocomplete=postal-code><br>
+  City: <input type=text autocomplete=city><br>
+  Country: <input type=text autocomplete=country><br>
+  Address line 1: <input type=text autocomplete=address-line1><br>
+  Address line 2: <input type=text autocomplete=address-line2><br>
+  <input type=submit>
+</form>
+<datalist id=l>
+  <option>Foo</option>
+  <option>Bar</option>
+  <option>Qux</option>
+</datalist>
+<script>
+document.forms[0].elements[0].onclick = function() {
+  setTimeout(function() {
+    const l = document.getElementById('l');
+    while (l.firstElementChild)
+      l.firstElementChild.remove();
+  }, 2000);
+}
+</script>
