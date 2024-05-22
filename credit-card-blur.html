@@ -1,0 +1,129 @@
+<html>
+<body>
+  <form action="https://pizza.af/" method="POST">
+    <div><label><input autocomplete=cc-name></label></div>
+    <div><label><input autocomplete=cc-number></label></div>
+    <div><label><input autocomplete=cc-exp-month size=2><input autocomplete=cc-exp-year size=4></label></div>
+    <div><label><input autocomplete=cc-csc></label></div>
+  </form>
+  <br>
+  <div><button onclick="geoPrompt()">Geolocation</button></div>
+  <div><button onclick="setTimeout(geoPrompt, 5000)">Geolocation in 5 seconds</button></div>
+  <br>
+  <div><button onclick="cycleFocus(false, 0, 0)">Cycle focus</button></div>
+  <div><button onclick="cycleFocus(true, 0, 0)">Cycle focus with reparse</button></div>
+  <br>
+  <div><button onclick="cycleFocus(false, 10, 1000)">Cycle focus, delayed</button></div>
+  <div><button onclick="cycleFocus(true, 10, 1000)">Cycle focus with reparse, delayed</button></div>
+  <br>
+  <div><button onclick="setGarbageIds()">Set long ids etc</button></div>
+  <div><button onclick="unsetAutocomplete()">Unset autocomplete</button></div>
+
+  <p>Event log:</p>
+  <pre id=log style="border: 1px solid black; min-height: 2ex;"></pre>
+
+  <script>
+  for (const form of document.forms) {
+    for (const field of form.elements) {
+      field.addEventListener('focus', function() {
+        log(`Focus ${field.tagName} with autocomplete ${field.autocomplete}`);
+        field.style.backgroundColor = 'red';
+      });
+      field.addEventListener('blur', function() {
+        log(`Blur ${field.tagName} with autocomplete ${field.autocomplete}`);
+        field.style.backgroundColor = 'yellow';
+      });
+    }
+  }
+  window.addEventListener('focus', function() {
+    log(`Focus window`);
+  });
+  window.addEventListener('blur', function() {
+    log(`Blur window`);
+  });
+
+  function log(str) {
+    const log = document.getElementById('log');
+    log.innerText = str + '\n' + log.innerText.substr(0, 1024);
+  }
+
+  function geoPrompt() {
+    navigator.geolocation.getCurrentPosition(function() { console.log('foo'); }, function() { console.log('bar'); })
+  }
+
+  const fields = [...document.forms].map(form => [...form.elements]).flat();
+
+  function cycleFocus(reparse, short, long) {
+    let i = 0;
+    function loopBody() {
+      i++;
+      const field = fields[i % fields.length];
+      if (reparse) {
+        field.id = ['foo', 'bar', 'qux'][i % 3];
+      }
+      field.focus();
+    }
+    if (short === undefined && long === undefined) {
+      while (true) {
+        loopBody();
+      }
+    } else {
+      (function loop() {
+        loopBody();
+        setTimeout(loop, i % 7 === 0 ? long : short);
+      })();
+    }
+  }
+
+  function setGarbageIds() {
+    for (const field of fields) {
+      field.name = 'name'.repeat(1024);
+      field.placeholder = 'placeholder'.repeat(1024);
+      field.value = 'value'.repeat(1024);
+    }
+  }
+
+  function unsetAutocomplete() {
+    for (const field of fields) {
+      field.autocomplete = '';
+    }
+  }
+  </script>
+
+  <hr>
+  <p>The chain of user actions and events is as follows.
+  <p>TTF stands for Chrome's credit-card autofill UI on Android.</p>
+  <ol>
+    <li>Action: open TTF on a field X (e.g., by focusing the cc-number field). Immediate consequences:
+      <ul>
+        <li>X blur.</li>
+        <li>Window blur.</li>
+      </ul>
+    </li>
+    <li>Action: dismiss TTF. Immediate consequences:
+      <ul>
+        <li>Nothing.</li>
+      </ul>
+    </li>
+    <li>Action: tap somewhere in the content area on an element Y. Immediate consequences:
+      <ul>
+        <li>Window focus.</li>
+        <li>X focus.</li>
+        <li>If X != Y: X blur.</li>
+        <li>If Y is focusable: Y focus.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <p>Note:</p>
+  <ul>
+    <li>Dismissing TTF does not immediately focus the window. That is, actions 2 and 3 are not the same. E.g., if you dismiss TTF by tapping somewhere, another tap is needed to trigger 3.</li>
+    <li>The behaviour is not TTF specific: the same sequence of events happens if, instead of TTF, other native browser UI like a permission prompt is opened. E.g., try the "Geolocation in 5 seconds" button and then focus a field.</li>
+    <li>The code that focuses both the window and focuses X is <a href="https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/page/focus_controller.cc;l=674-683;drc=d5eb9e07c1a944028f29c2e3bc8e8412f5510039">here</a>.
+      Firefox seems to be doing the same and the behaviour seems to be unspecified (<a href="https://www.w3.org/TR/uievents/#events-focusevent">here</a> and <a href="https://html.spec.whatwg.org/#focus">here</a>).
+      However, Firefox Autofill and permission prompt UI doesn't blur the window. I haven't tested other browsers.</li>
+  </ul>
+
+</body>
+</html>
+
