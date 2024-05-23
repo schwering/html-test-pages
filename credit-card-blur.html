@@ -1,11 +1,13 @@
 <html>
+<style>
+iframe { height: 6ex; }
+</style>
 <body>
   <form action="https://pizza.af/" method="POST">
-    <div><label><input autocomplete=cc-name></label></div>
-    <div><label><input autocomplete=cc-number></label></div>
-    <div><label><input autocomplete=cc-exp-month size=2><input autocomplete=cc-exp-year size=4></label></div>
-    <div><label><input autocomplete=cc-csc></label></div>
   </form>
+  <br>
+  <div><a id="without-iframes" href="?iframes=false">Load form without iframes</a></div>
+  <div><a id="with-iframes" href="?iframes=true">Load form with iframes</a></div>
   <br>
   <div><button onclick="geoPrompt()">Geolocation</button></div>
   <div><button onclick="setTimeout(geoPrompt, 5000)">Geolocation in 5 seconds</button></div>
@@ -19,12 +21,36 @@
   <div><button onclick="setGarbageIds()">Set long ids etc</button></div>
   <div><button onclick="unsetAutocomplete()">Unset autocomplete</button></div>
 
-  <p>Event log:</p>
+  <p>Event log (most-recent events are at the top):</p>
   <pre id=log style="border: 1px solid black; min-height: 2ex;"></pre>
 
   <script>
-  for (const form of document.forms) {
-    for (const field of form.elements) {
+  let fields = [];
+
+  const useIframes = new URL(window.location.href).searchParams.get('iframes') === 'true';
+  const topForm = document.forms[0];
+  topForm.style.display = 'none';
+  topForm.innerHTML = !useIframes ? `
+    <div><input autocomplete=cc-name></form></div>
+    <div><input autocomplete=cc-number></form></div>
+    <div><input autocomplete=cc-exp-month size=2><input autocomplete=cc-exp-year size=4></form></div>
+    <div><input autocomplete=cc-csc></form></div>
+  ` : `
+    <div><iframe srcdoc="<form><input autocomplete=cc-name></form>"></iframe></div>
+    <div><iframe srcdoc="<form><input autocomplete=cc-number></form>"></iframe></div>
+    <div><iframe srcdoc="<form><input autocomplete=cc-exp-month size=2><input autocomplete=cc-exp-year size=4></form>"></iframe></div>
+    <div><iframe srcdoc="<form><input autocomplete=cc-csc></form>"></iframe></div>
+  `;
+
+  document.getElementById(!useIframes ? 'without-iframes' : 'with-iframes').hidden = true;
+
+  setTimeout(function() {
+    const frames = [window];
+    for (let i = 0; i < window.frames.length; i++) {
+      frames.push(window.frames[i]);
+    }
+    fields = frames.map(frame => [...frame.document.forms]).flat().map(form => [...form.elements]).flat();
+    for (const field of fields) {
       field.addEventListener('focus', function() {
         log(`Focus ${field.tagName} with autocomplete ${field.autocomplete}`);
         field.style.backgroundColor = 'red';
@@ -33,8 +59,18 @@
         log(`Blur ${field.tagName} with autocomplete ${field.autocomplete}`);
         field.style.backgroundColor = 'yellow';
       });
+      if (window !== field.ownerDocument.defaultView) {
+        field.ownerDocument.defaultView.addEventListener('focus', function() {
+          log(`Focus window with autocomplete ${field.autocomplete}`);
+        });
+        field.ownerDocument.defaultView.addEventListener('blur', function() {
+          log(`Blur window with autocomplete ${field.autocomplete}`);
+        });
+      }
     }
-  }
+    topForm.style.display = 'block';
+  }, useIframes ? 1000 : 0);
+
   window.addEventListener('focus', function() {
     log(`Focus window`);
   });
@@ -50,8 +86,6 @@
   function geoPrompt() {
     navigator.geolocation.getCurrentPosition(function() { console.log('foo'); }, function() { console.log('bar'); })
   }
-
-  const fields = [...document.forms].map(form => [...form.elements]).flat();
 
   function cycleFocus(reparse, short, long) {
     let i = 0;
