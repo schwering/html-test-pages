@@ -14,6 +14,7 @@ label { display: block; }
 
 <div class="foo">
   <a href="#">Links</a><br>
+  <button>Button</button><br>
   <a href="#">Rechts</a>
 </div>
 
@@ -32,7 +33,7 @@ label { display: block; }
 <div class="foo">
   Select:<br>
   <a href="#">Links</a><br>
-  <select><option>110</option><option>111</option><option>112</option></select>
+  <select><option>110</option><option>111</option><option>112</option></select><br>
   <a href="#">Rechts</a>
 </div>
 <div class="foo">
@@ -46,6 +47,16 @@ label { display: block; }
   <a href="#">Links</a><br>
   <div contenteditable style="border: 1px solid black; width: 5em; height: 5em; background-color: white; padding: 0.5ex;"></div>
   <a href="#">Rechts</a>
+</div>
+<div class="foo">
+  Iframe:<br>
+  <a href="#">Links</a><br>
+  <iframe src=""></iframe><br>
+  <a href="#">Rechts</a>
+  <script>
+    document.querySelector('iframe').src = window.location.href;
+    console.log(document.querySelector('iframe').src);
+  </script>
 </div>
 
 <div class="foo" style="font-family: monospace; white-space: pre;">
@@ -88,8 +99,9 @@ label { display: block; }
     };
   }
 
-  const shouldStopPropagation = addCheckbox('stopPropagation()', false);
   const shouldPreventDefault = addCheckbox('preventDefault()', false);
+  const shouldStopPropagation = addCheckbox('stopPropagation()', false);
+  const shouldStopImmediatePropagation = addCheckbox('stopImmediatePropagation()', false);
 
   function handler(e) {
     for (let p = e.target; p; p = p.parentElement) {
@@ -97,21 +109,24 @@ label { display: block; }
         return;
       }
     }
-    const msg = ['type', 'eventPhase', 'key', 'code', 'location', 'data'].filter(x => x in e).map(x => x +'='+ str(e[x])).join(' ') +
+    const msg = ['type', 'eventPhase', 'key', 'code', 'location', 'data', 'inputType', 'ctrlKey', 'altKey', 'metaKey', 'shiftKey'].filter(x => x in e).map(x => x +'='+ str(e[x])).join(' ') +
                 ` value=${str(e.target.value)} target='${getClassName(e.target)}' currentTarget='${getClassName(e.currentTarget)}'`;
     console.log(msg);
     const div = document.createElement('div');
     div.innerText = msg;
     log.insertBefore(div, log.firstElementChild);
-    if (shouldStopPropagation()) {
-      e.stopPropagation();
-    }
     if (shouldPreventDefault()) {
       e.preventDefault();
     }
+    if (shouldStopPropagation()) {
+      e.stopPropagation();
+    }
+    if (shouldStopImmediatePropagation()) {
+      e.stopImmediatePropagation();
+    }
   }
 
-  for (const type of ['click', 'keydown', 'beforeinput', 'input', 'keyup', 'keypress']) {
+  for (const type of ['selectionchange', 'click', 'keydown', 'beforeinput', 'input', 'keyup', 'keypress', 'compositionstart', 'compositionupdate', 'compositionend']) {
     const checked = addCheckbox(type, true);
     for (const target of [window, document, ...document.all]) {
       function h(e) {

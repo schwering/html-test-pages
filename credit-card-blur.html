@@ -153,6 +153,7 @@ iframe { height: 6ex; }
   <ul>
     <li>Dismissing TTF does not immediately focus the window. That is, actions 2 and 3 are not the same. E.g., if you dismiss TTF by tapping somewhere, another tap is needed to trigger 3.</li>
     <li>The behaviour is not TTF specific: the same sequence of events happens if, instead of TTF, other native browser UI like a permission prompt is opened. E.g., try the "Geolocation in 5 seconds" button and then focus a field.</li>
+    <li>The behaviour is the same with or without iframes (except that with iframes there are additional focus/blur events of the respective windows).
     <li>The code that focuses both the window and focuses X is <a href="https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/page/focus_controller.cc;l=674-683;drc=d5eb9e07c1a944028f29c2e3bc8e8412f5510039">here</a>.
       Firefox seems to be doing the same and the behaviour seems to be unspecified (<a href="https://www.w3.org/TR/uievents/#events-focusevent">here</a> and <a href="https://html.spec.whatwg.org/#focus">here</a>).
       However, Firefox Autofill and permission prompt UI doesn't blur the window. I haven't tested other browsers.</li>
