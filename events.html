@@ -66,7 +66,6 @@ label { display: block; }
   <button onclick="javascript:document.getElementById('log').innerText = '';" accesskey="c">Clear</button>
 </div>
 
-
 <script>
   function getClassName(e) {
     const s = e.toString();
@@ -99,18 +98,23 @@ label { display: block; }
     };
   }
 
+  const shouldShowCapturing = addCheckbox('show capturing phase', false);
+  const shouldShowBubbling = addCheckbox('show bubbling phase', false);
   const shouldPreventDefault = addCheckbox('preventDefault()', false);
   const shouldStopPropagation = addCheckbox('stopPropagation()', false);
   const shouldStopImmediatePropagation = addCheckbox('stopImmediatePropagation()', false);
 
-  function handler(e) {
+  function handle(e) {
     for (let p = e.target; p; p = p.parentElement) {
       if (p === setup) {
         return;
       }
     }
-    const msg = ['type', 'eventPhase', 'key', 'code', 'location', 'data', 'inputType', 'ctrlKey', 'altKey', 'metaKey', 'shiftKey'].filter(x => x in e).map(x => x +'='+ str(e[x])).join(' ') +
-                ` value=${str(e.target.value)} target='${getClassName(e.target)}' currentTarget='${getClassName(e.currentTarget)}'`;
+    const msg = ['type', 'eventPhase', 'key', 'code', 'data', 'inputType', 'target_value'].filter(x => x in e).map(x => x +'='+ str(e[x])).join(' ') +
+                (e.clipboardData ? ` clipboardData=${str(e.clipboardData.getData('text'))}` : ``) +
+                (e.dataTransfer ? ` dataTransfer=${str(e.dataTransfer.getData('text'))}` : ``) +
+                ` target='${getClassName(e.target)}' currentTarget='${getClassName(e.currentTarget)}' ` +
+                ['ctrlKey', 'altKey', 'metaKey', 'shiftKey'].filter(x => x in e && e[x]).map(x => x).join(' ');
     console.log(msg);
     const div = document.createElement('div');
     div.innerText = msg;
@@ -126,16 +130,19 @@ label { display: block; }
     }
   }
 
-  for (const type of ['selectionchange', 'click', 'keydown', 'beforeinput', 'input', 'keyup', 'keypress', 'compositionstart', 'compositionupdate', 'compositionend']) {
-    const checked = addCheckbox(type, true);
+  for (const type of ['selectionchange', 'click', 'keydown', 'beforeinput', 'input', 'keyup', 'keypress', 'compositionstart', 'compositionupdate', 'compositionend', 'paste', 'dragstart', 'drag', 'dragenter', 'dragleave', 'dragover', 'drop', 'dragend'].toSorted()) {
+    const shouldShowEvent = addCheckbox(type, type !== 'selectionchange' && type !== 'dragover');
     for (const target of [window, document, ...document.all]) {
-      function h(e) {
-        if (checked()) {
-          handler(e);
-        }
+      function handlerForPhase(phase) {
+        return function(e) {
+          if (shouldShowEvent() && e.eventPhase === phase && (e.eventPhase !== Event.CAPTURING_PHASE || shouldShowCapturing()) && (e.eventPhase !== Event.BUBBLING_PHASE || shouldShowBubbling())) {
+            handle(e);
+          }
+        };
       }
-      target.addEventListener(type, h, true);
-      target.addEventListener(type, h, false);
+      target.addEventListener(type, handlerForPhase(Event.CAPTURING_PHASE), /*useCapture=*/true);
+      target.addEventListener(type, handlerForPhase(Event.AT_TARGET));
+      target.addEventListener(type, handlerForPhase(Event.BUBBLING_PHASE), /*useCapture=*/false);
     }
   }
 </script>
