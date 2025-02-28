@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body { font-family: "Roboto", sans-serif; }
+    </style>
+  </head>
+  <body>
+    <div id="html"></div>
+    <script id="script"></script>
+    <hr>
+    https://schwering.github.io/html-test-pages/fast-form.html |
+    <a href="#" id="edit">Edit</a>
+    <script>
+      (function() {
+        const defaultForms = {
+          'Address': {
+            html: `<form action="?" method="GET">
+  First name: <input type=text autocomplete=given-name><br>
+  Last name: <input type=text autocomplete=family-name><br>
+  ZIP: <input type=text autocomplete=postal-code><br>
+  City: <input type=text autocomplete=city><br>
+  Country: <input type=text autocomplete=country><br>
+  Address line 1: <input type=text autocomplete=address-line1><br>
+  Address line 2: <input type=text autocomplete=address-line2><br>
+  <input type=submit>
+</form>`,
+            script: ``
+          },
+          'Textarea': {
+            html: `<textarea autocomplete=given-name rows=1></textarea>`,
+            script: ``
+          },
+          'Contenteditable': {
+            html: `<div contenteditable style="width: 10em; height: 2ex; border: 1px solid black; padding: 0.5ex;"></div>`,
+            script: ``
+          },
+        };
+        const edit = document.getElementById('edit');
+        for (const [name, form] of Object.entries(defaultForms)) {
+          const a = document.createElement('a');
+          a.href = '?html=' + encodeURIComponent(form.html) +'&script='+ encodeURIComponent(form.script);
+          a.innerText = name;
+          edit.parentElement.insertBefore(a, edit);
+          edit.parentElement.insertBefore(document.createTextNode(' | '), edit);
+        }
+        function getParam(key) {
+          key = encodeURIComponent(key);
+          const search = (window.location.search || '').substr(1);
+          const regex = new RegExp(`\\b${key}=([^&]*)`);
+          const match = search.match(regex);
+          if (!match || match[1] === undefined) {
+            return undefined;
+          }
+          return decodeURIComponent(match[1]);
+        }
+        let html = getParam('html');
+        let script = getParam('script');
+        if (!html && !script) {
+          const form = defaultForms['Address'];
+          html = form.html;
+          script = form.script;
+        }
+        html = decodeURIComponent(html);
+        script = decodeURIComponent(script);
+        if (window.location.hash !== '#edit') {
+          document.getElementById('html').innerHTML = html;
+          document.getElementById('script').innerText = script;
+          edit.onclick = function() {
+            window.location.hash = '#edit';
+            window.location.reload();
+          };
+        } else {
+          document.body.innerHTML = `
+            <textarea rows=25 cols=120 placeholder=HTML id=code>${html}</textarea><br>
+            <textarea rows=15 cols=120 placeholder=JavaScript id=script>${script}</textarea><br>
+            <button id=load>Load</button>
+            `;
+          document.getElementById('load').onclick = function() {
+            const action = new URL(window.location);
+            const html = document.getElementById('code').value;
+            const script = document.getElementById('script').value;
+            window.location.href = '?html=' + encodeURIComponent(html) +'&script='+ script;
+          };
+        }
+      })();
+    </script>
+  </body>
+</html>
