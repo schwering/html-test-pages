@@ -1,0 +1,27 @@
+<html>
+<body>
+  <p>Will focus the first form control in <span id=timeout-info></span> seconds.</p>
+  <p>Change the query part in the URL to change the timeout.</p>
+  <form action=. method=POST id=form>
+    First name: <input type=tel autocomplete=given-name><br>
+    Last name: <input type=text autocomplete=family-name><br>
+    ZIP: <input type=text autocomplete=postal-code><br>
+    City: <input type=text autocomplete=city><br>
+    Country: <input type=text autocomplete=country><br>
+    Address line 1: <input type=text autocomplete=address-line1><br>
+    Address line 2: <input type=text autocomplete=address-line2><br>
+  </form>
+  <script>
+  let timeout = window.location.search.substr(1) || 2;
+  document.getElementById('timeout-info').innerText = timeout;
+  const interval = setInterval(function() {
+    timeout -= 1;
+    if (timeout < 0) timeout = 0;
+    document.getElementById('timeout-info').innerText = timeout;
+    if (timeout <= 0) {
+      document.forms[0].elements[0].blur();
+      document.forms[0].elements[0].focus();
+      clearInterval(interval);
+    }
+  }, 1000);
+  </script>
