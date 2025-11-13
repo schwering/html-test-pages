@@ -1,0 +1,177 @@
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <style>
+    label { display: block; text-transform: capitalize; }
+    </style>
+  </head>
+  <body>
+    <label>
+      <a href="#sync=y&text=y">sync input</a> |
+      <a href="#sync=n&text=y">async input</a> |
+      <a href="#sync=y&text=n">sync select</a> |
+      <a href="#sync=n&text=n">async select</a>
+    </label>
+
+    <hr>
+
+    <form action="./address-refill.html" method="POST">
+      <label>First name: <input autocomplete="given-name"></label>
+      <label>Last name: <input autocomplete="family-name"></label>
+      <label>Address line 1: <input autocomplete="address-line1"></label>
+      <label>Address line 2: <input autocomplete="address-line2"></label>
+      <label>Address line 3: <input autocomplete="address-line3"></label>
+      <label>Country: <select autocomplete="country">
+        <option value=CA>Canada</option>
+        <option value=DE>Germany</option>
+        <option value=ES>Spain</option>
+        <option label=US>United States</option>
+      </select>
+      </label>
+      <label><input type="submit" value="submit"></label>
+    </form>
+
+    <hr>
+
+    <form action="./address-refill.html" method="POST">
+      <label>First name: <input autocomplete="given-name"></label>
+      <label>Last name: <input autocomplete="family-name"></label>
+      <label>Address line 1: <input autocomplete="address-line1"></label>
+      <label>Address line 2: <input autocomplete="address-line2"></label>
+      <label>Address line 3: <input autocomplete="address-line3"></label>
+      <label>Country: <input autocomplete=country-name></label>
+      <label><input type="submit" value="submit"></label>
+    </form>
+
+    <hr>
+
+    <form action="./address-refill.html" method="POST">
+      <label>Address line 1: <input autocomplete="address-line1"></label>
+      <label>Address line 2: <input autocomplete="address-line2"></label>
+      <label>Address line 3: <input autocomplete="address-line3"></label>
+      <label>Country: <input autocomplete=country-name></label>
+      <label><input type="submit" value="submit"></label>
+    </form>
+
+    <hr>
+
+    <form action="./address-refill.html" method="POST">
+      <label>First name: <input autocomplete="given-name"></label>
+      <label>Address line 1: <input autocomplete="address-line1"></label>
+      <label>Address line 2: <input autocomplete="address-line2"></label>
+      <label>Address line 3: <input autocomplete="address-line3"></label>
+      <label>Country: <input autocomplete=country-name></label>
+      <label><input type="submit" value="submit"></label>
+    </form>
+
+    <hr>
+
+    <form action="./address-refill.html" method="POST">
+      <label>Country: <input autocomplete=country-name></label>
+      <label><input type="submit" value="submit"></label>
+    </form>
+
+    <script>
+function insertLabelBefore(html, sibling) {
+  const label = document.createElement('label');
+  label.innerHTML = html;
+  sibling.parentElement.insertBefore(label, sibling);
+}
+
+const regex = /(?<=[a-zA-Z])(?=[0-9])|(?<=[0-9])(?=[a-zA-Z])|-/g;
+
+for (const country of document.querySelectorAll('[autocomplete^=country]')) {
+  country.addEventListener('change', function(e) {
+    const options = Object.fromEntries(window.location.hash.substr(1).split('&').map(s => s.split('=')).map(kv => [kv[0], kv[1] === 'y']));
+    const jobs = [];
+    for (const autocomplete of ['address-line3', 'address-line2', 'address-line1', 'family-name', 'given-name']) {
+      if (!country.form.querySelector(`[autocomplete=${autocomplete}]`)) {
+        jobs.push(insertLabelBefore(`${autocomplete.replace(regex, ' ' )}: <input autocomplete=${autocomplete}>`, country.form.firstElementChild));
+      }
+    }
+    if (!country.form.querySelector('[autocomplete=address-level1]')) {
+      const text = `<input autocomplete=address-level1>`;
+      const states = country.value.startsWith('U') ? usStates : germanStates;
+      const select = `<select>${states.map(s => `<option value="${s[0]}">${s[1]}</option>`).join()}</select>`;
+      jobs.push(insertLabelBefore(`State: ${options.text ? text : select}`, country.closest('label')));
+    }
+    if (options.sync) {
+      jobs.forEach(job => job());
+    } else {
+      setTimeout(() => jobs.forEach(job => job()), 10);
+    }
+  });
+}
+
+const usStates = [
+  ['AL', 'Alabama'],
+  ['AK', 'Alaska'],
+  ['AZ', 'Arizona'],
+  ['AR', 'Arkansas'],
+  ['CA', 'California'],
+  ['CO', 'Colorado'],
+  ['CT', 'Connecticut'],
+  ['DE', 'Delaware'],
+  ['DC', 'District of Columbia'], // Often included for completeness
+  ['FL', 'Florida'],
+  ['GA', 'Georgia'],
+  ['HI', 'Hawaii'],
+  ['ID', 'Idaho'],
+  ['IL', 'Illinois'],
+  ['IN', 'Indiana'],
+  ['IA', 'Iowa'],
+  ['KS', 'Kansas'],
+  ['KY', 'Kentucky'],
+  ['LA', 'Louisiana'],
+  ['ME', 'Maine'],
+  ['MD', 'Maryland'],
+  ['MA', 'Massachusetts'],
+  ['MI', 'Michigan'],
+  ['MN', 'Minnesota'],
+  ['MS', 'Mississippi'],
+  ['MO', 'Missouri'],
+  ['MT', 'Montana'],
+  ['NE', 'Nebraska'],
+  ['NV', 'Nevada'],
+  ['NH', 'New Hampshire'],
+  ['NJ', 'New Jersey'],
+  ['NM', 'New Mexico'],
+  ['NY', 'New York'],
+  ['NC', 'North Carolina'],
+  ['ND', 'North Dakota'],
+  ['OH', 'Ohio'],
+  ['OK', 'Oklahoma'],
+  ['OR', 'Oregon'],
+  ['PA', 'Pennsylvania'],
+  ['RI', 'Rhode Island'],
+  ['SC', 'South Carolina'],
+  ['SD', 'South Dakota'],
+  ['TN', 'Tennessee'],
+  ['TX', 'Texas'],
+  ['UT', 'Utah'],
+  ['VT', 'Vermont'],
+  ['VA', 'Virginia'],
+  ['WA', 'Washington'],
+  ['WV', 'West Virginia'],
+  ['WI', 'Wisconsin'],
+  ['WY', 'Wyoming']
+];
+const germanStates = [
+  ['BW', 'Baden-Württemberg'],
+  ['BY', 'Bayern'],
+  ['BE', 'Berlin'],
+  ['BB', 'Brandenburg'],
+  ['HB', 'Bremen'],
+  ['HH', 'Hamburg'],
+  ['HE', 'Hessen'],
+  ['MV', 'Mecklenburg-Vorpommern'],
+  ['NI', 'Niedersachsen'],
+  ['NW', 'Nordrhein-Westfalen'],
+  ['RP', 'Rheinland-Pfalz'],
+  ['SL', 'Saarland'],
+  ['SN', 'Sachsen'],
+  ['ST', 'Sachsen-Anhalt'],
+  ['SH', 'Schleswig-Holstein'],
+  ['TH', 'Thüringen']
+];
+    </script>

@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <div>
+      <a href="#sync=y">sync input</a> |
+      <a href="#sync=n">async input</a>
+    </div>
+
+    <hr>
+
+    <form action="./address-refill.html" method="POST">
+      <div>Name: <input autocomplete="cc-name"></div>
+      <div>Number: <input autocomplete="cc-number"></div>
+      <div>CVC: <input autocomplete="cc-csc"></div>
+      <div><input type="submit" value="submit"></div>
+    </form>
+
+    <script>
+function insertDivBefore(html, sibling) {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  sibling.parentElement.insertBefore(div, sibling);
+}
+
+for (const cvc of document.querySelectorAll('[autocomplete=cc-csc]')) {
+  cvc.addEventListener('change', function(e) {
+    const options = Object.fromEntries(window.location.hash.substr(1).split('&').map(s => s.split('=')).map(kv => [kv[0], kv[1] === 'y']));
+    const text = `<input autocomple=cc-exp>`;
+    const change = insertDivBefore(`Expiration date: ${text}`, cvc.closest('div'));
+    if (options.sync) {
+      change();
+    } else {
+      setTimeout(change, 10);
+    }
+  });
+}
+    </script>
