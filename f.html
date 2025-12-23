@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body { font-family: sans-serif; font-size: 150%; line-height: 150%; }
+#container { display: grid; place-items: center; height: 100vh;}
+.question-and-answer { display: block; width: 75%; border: 1pt solid black; border-radius: 1ex; background-color: #88E788; padding: 1ex; }
+label, .question, #result { display: block; }
+#smiley { font-size: 400%; }
+#smiley::before { content: "🎅" ; }
+#smiley.bad::before { content: "😭" ; }
+#smiley.good::before { content: "🎉"; }
+#result { font-size: 175%; font-weight: bold; }
+</style>
+</head>
+<body>
+<div id=container>
+<div class=question-and-answer>
+<div class=question></div>
+<div> <label><input type=radio name=response name=0> <span class=response></span></label> </div>
+<div> <label><input type=radio name=response name=1> <span class=response></span></label> </div>
+<div> <label><input type=radio name=response name=2> <span class=response></span></label> </div>
+<div> <label><input type=radio name=response name=3> <span class=response></span></label> </div>
+<div> <button id=prev>Zur&uuml;ck</button> <button id=next>Weiter</button> <button id=decode>Entschlüsseln</button> </div>
+</div>
+<div id=smiley></div>
+<div id=result style="visibility: hidden;">XXXXX-XXXXX-XXXXX-XXXXX-XXXXX</div>
+<div style="visibility: hidden;">Antworten: <span id=responses></span></div>
+</div>
+
+<script>
+const QUESTIONS = [
+[ "Was bedeutet Detritus?", "Freundschaft", "Abfall", "Vergesslichkeit", "Soldat" ],
+[ "Wann erschien der Comicband \"Asterix bei den Schweizern\"?", "1905", "1935", "1970", "2005" ],
+[ "Wer hat am frühesten Primzahlen untersucht?", "Euklid", "Henri Dunant", "Aristoteles", "Homer" ],
+[ "Wie viele Primzahlen gibt es?", "7", "Unendlich viele", "Je zwei für jede natürliche Zahl", "Unbekannt" ],
+[ "Wann wurde Augustus ermordet?", "44 v. Chr.", "9 n. Chr.", "14 n. Chr.", "Nie" ],
+[ "In welcher Stadt sitzt die Schweizer Regierung?", "Zürich", "Bern", "Luzern", "Genf" ],
+[ "Wie viele Kantone (inklusive Halbkantone) bilden zusammen die Schweizerische Eidgenossenschaft?", "20", "26", "23", "30" ],
+[ "In der Schweiz gibt es vier Amtssprachen. Welche gehört nicht dazu?", "Englisch", "Rätoromanisch", "Deutsch", "Französisch" ],
+[ "Als was bezeichnet man in der US-Politik einen \"landslide victory\"?", "Ein Unwetter am Wahlabend.", "Wenn der siegreiche Kandidat auf einer Bananenschale ausrutscht.", "Einen Wahlsieg, bei dem der Gegenkandidat im Matsch versinkt.", "Einen Wahlsieg mit sehr grosser Mehrheit." ],
+[ "Warum nannte man Lyndon B. Johnson (vielleicht ironisch) \"landslide Lyndon\"?", "Er hatte eine Wahl mit 87 Stimmen Vorsprung gewonnen.", "Er hatte eine Wahl mit 0,87% der Stimmen Vorsprung gewonnen.", "Er hatte eine Wahl mit 87% der Stimmen gewonnen.", "Er hatte eine Wahl 1987 mit grossem Vorsprung gewonnen." ],
+[ "Wie hoch ist das Matterhorn?", "2962 m", "4478 m", "4806 m", "8849 m" ],
+[ "Welcher Schweizer Tennisprofi gilt als einer der besten Spieler aller Zeiten und hat 20 Grand-Slam-Titel gewonnen?", "Stan Wawrinka", "Boris Becker", "Roger Federer", "Yann Sommer" ],
+[ "Die Schweiz ist bekannt für ihre Seen. Welcher See ist der grösste, der vollständig auf Schweizer Staatsgebiet liegt?", "Bodensee", "Zürichsee", "Genfersee", "Lac de Neuchâtel" ],
+[ "Was passiert in der Schweiz, wenn man innerhalb von 100 Tagen 50000 Unterschriften gegen ein neues Gesetz sammelt?", "Der Bundesrat muss zurücktreten", "Gar nichts, es ist nur eine Meinungsumfrage", "Es kommt zu einer Volksabstimmung", "Das Gesetz wird sofort gelöscht" ],
+[ "Was wird in der Schweiz jedes Jahr am ersten Mittwoch im Februar um 13:30 Uhr landesweit getestet?", "Die Sirenen des Zivilschutzes", "Die WLAN-Geschwindigkeit an Schulen", "Die Lautsprecher in den Fussballstadien", "Die Kirchenglocken" ],
+[ "Welche bekannte Erfindung wurde 1941 vom Schweizer Ingenieur George de Mestral erfunden, nachdem er Disteln an seinem Hund kleben sah?", "Der Klettverschluss", "Die Nespresso-Kapsel", "Das Sackmesser", "Das Schweizer Offiziersmesser" ],
+[ "Welches Schweizer Unternehmen ist der grösste Lebensmittelhersteller der Welt?", "Coop", "Migros", "Nestlé", "Lindt & Sprüngli" ],
+[ "Wenn du eine Webseite aufrufst, nutzt dein Browser meistens das Protokoll 'HTTPS'. Wofür steht das zusätzliche 'S' am Ende?", "Secure (für verschlüsselte Übertragung)", "Speed (für schnelles Laden)", "Server (für die Verbindung zum Host)", "Swiss-Standard" ],
+[ "Welcher Schweizer erfand welche Programmiersprache?", "Hans-Rudolf Merz erfand Heidi.", "Bjarne Stroustrup erfand Ada.", "Karin Keller-Sutter erfand Haskell.", "Niklaus Wirth erfand Pascal." ],
+[ "Was berechnet der Luhn-Check?", "Den Salzgehalt von Pommes.", "Eine Kontrollzahl, um Tippfehler zu erkennen.", "Das Alter eines Baumstammes.", "Ob der Reifendruck angemessen ist." ],
+[ "Welches Tier hat die Stadt Bern gegründet (laut einer alten Sage) und ist deshalb heute noch im Wappen und im Park der Stadt zu finden?", "Ein Steinbock", "Ein Murmeltier", "Ein Bär", "Ein Goldfisch" ],
+[ "Wie nennt man die Schweiz oft auf Lateinisch, weshalb auch das Kennzeichen 'CH' an Autos klebt?", "Casa Helvetia", "Chocolate Helvetia", "Cantona Helvetica", "Confoederatio Helvetica" ],
+[ "Wann wurden die äusseren Grenzen der heutigen Schweiz festgelegt?", "1518 beim Rotarischen Meeting", "1776 bei der Unabhängigkeitserklärung", "1815 beim Wiener Kongress", "1914 nach dem Attentat auf Franz Ferdinand" ],
+[ "Seit wann haben Frauen in der Schweiz die vollen Bürgerrechte?", "1939", "1971", "2003", "Heute noch nicht." ],
+[ "Welche Firma ist die Beste?", "Amazon", "Apple", "Microsoft", "Google" ],
+];
+
+function decode(rs) {
+  const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+  const KEY = (window.location.search.substr(1) || window.location.hash.substr(1) || prompt('Geben Sie bitte Ihren supergeheimen Entschlüsselungscode ein')).split(',').map(s => parseInt(s));
+  if (KEY.length !== QUESTIONS.length) {
+    return('Ohne Schlüssel wird das nichts');
+  }
+  const decoded = rs.map((r, i) => ALPHABET[r + KEY[i]]);
+  const pretty = decoded.join('').replace(/(.{5})/g, '$1 ').trim().replaceAll(' ', '-')
+  return pretty;
+}
+
+function luhnCheck(xs) {
+  const s = xs.toReversed().join('');
+  let sum = 0;
+  for (let i = 0; i < s.length; ++i) {
+    let digit = parseInt(s[i]);
+    if (i % 2 !== 0) {
+      digit *= 2;
+    }
+    if (digit > 9) {
+      digit -= 9;
+    }
+    sum += digit;
+  }
+  return sum % 10;
+}
+
+const responses = document.cookie.split("; ").find((row) => row.startsWith("quiz-responses="))?.split("=")[1].split(',').map(r => parseInt(r)) || [];
+
+let currentQuestion = 0;
+
+function show(i) {
+  const q = QUESTIONS[i];
+  [document.querySelector('.question'), ...document.querySelectorAll('.response')].forEach((e, j) => e.innerText = q[j]);
+  [...document.querySelectorAll('input[type=radio]')].forEach((e, j) => e.checked = j === responses[i]);
+
+  document.querySelector('#prev').disabled = i <= 0;
+  document.querySelector('#next').disabled = i+1 >= QUESTIONS.length;
+  updateDecodeButton();
+}
+
+function updateDecodeButton() {
+  document.querySelector('#decode').disabled = responses.length < QUESTIONS.length || responses.some(r => r !== 0 && r !== 1 && r !== 2 && r !== 3);
+}
+
+[...document.querySelectorAll('input[type=radio]')].forEach(e => addEventListener('change', function() {
+  responses[currentQuestion] = [...document.querySelectorAll('input[type=radio]')].findIndex(e => e.checked);
+  updateDecodeButton();
+  document.cookie = `quiz-responses=${responses.join(',')}; Secure`;
+  document.querySelector('#responses').innerText = responses.join(', ');
+}));
+
+document.querySelector('#prev').addEventListener('click', function() {
+  show(--currentQuestion);
+});
+
+document.querySelector('#next').addEventListener('click', function() {
+  show(++currentQuestion);
+});
+
+document.querySelector('#decode').addEventListener('click', function() {
+  const result = document.querySelector('#result');
+  const smiley = document.querySelector('#smiley');
+  result.style.visibility = 'visible';
+  result.innerText = decode(responses);
+  smiley.classList.remove('bad');
+  smiley.classList.remove('good');
+  smiley.classList.add(luhnCheck(responses) === 0 ? 'good' : 'bad');
+});
+
+document.addEventListener('keydown', function(e) {
+  const k = e.key;
+  if (k === 'ArrowLeft') {
+    document.querySelector('#prev').click();
+  }
+  if (k === 'ArrowRight') {
+    document.querySelector('#next').click();
+  }
+  if (k === '1' || k === '2' || k === '3' || k == '4') {
+    [...document.querySelectorAll('input[type=radio]')][parseInt(k) - 1].click();
+  }
+});
+
+show(0);
+</script>
+
+</body>
+</html>
