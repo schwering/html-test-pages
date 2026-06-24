@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <input list="test">
+  <datalist id="test">
+    <option value=Foo1 label=Bar1>Baz1</option>
+    <option value=Foo2>Bar2</option>
+    <option label=Bar3>Foo3</option>
+    <option>Foo4</option>
+    <option value=Foo5></option>
+    <option label=Bar6></option>
+    <option label=Foo7>Foo7</option>
+  </datalist>
+
+  <select>
+    <option value=Foo1 label=Bar1>Baz1</option>
+    <option value=Foo2>Bar2</option>
+    <option label=Bar3>Foo3</option>
+    <option>Foo4</option>
+    <option value=Foo5></option>
+    <option label=Bar6></option>
+    <option label=Foo7>Foo7</option>
+  </select>
+
+  <input type=button value="Focus" onclick="javascript:(function() { document.querySelector('input').focus(); })()">
