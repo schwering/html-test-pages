@@ -1,8 +1,8 @@
 <html>
 <body>
   <form action=. method="GET">
-    <div><label>Name on card: <input type="text"></label></div>
-    <div><label>Credit card number: <input type="text"></label></div>
+    <div><label>Name on card: <input autocomplete=cc-name></label></div>
+    <div><label>Credit card number: <input autocomplete=cc-number></label></div>
     <div><label>Expiration date:
         <select autocomplete=cc-exp-month>
           <option value=01>Jan</option>
@@ -50,6 +50,16 @@ document.getElementById('reparse').onclick = function() {
   input.style.display = 'none';
   document.forms[0].appendChild(input);
 }
+    </script>
+    <div style="white-space: pre;" id=log></div>
+    <script>
+    for (const form of document.forms) {
+      for (const element of form) {
+        element.addEventListener('change', function(e) {
+          document.querySelector('#log').innerText += `${e.target.id || e.target.name || e.target.autocomplete} = ${e.target.value}\n`;
+        });
+      }
+    }
     </script>
   </form>
 </body>
