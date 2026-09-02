@@ -71,8 +71,8 @@
           html = form.html;
           script = form.script;
         }
-        html = decodeURIComponent(html);
-        script = decodeURIComponent(script);
+        html = html || '';
+        script = script || '';
         if (window.location.hash !== '#edit') {
           document.getElementById('html').innerHTML = html;
           document.getElementById('script').innerText = script;
