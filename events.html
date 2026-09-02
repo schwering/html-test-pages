@@ -114,7 +114,8 @@ label { display: block; }
                 (e.clipboardData ? ` clipboardData=${str(e.clipboardData.getData('text'))}` : ``) +
                 (e.dataTransfer ? ` dataTransfer=${str(e.dataTransfer.getData('text'))}` : ``) +
                 ` target='${getClassName(e.target)}' currentTarget='${getClassName(e.currentTarget)}' ` +
-                ['ctrlKey', 'altKey', 'metaKey', 'shiftKey'].filter(x => x in e && e[x]).map(x => x).join(' ');
+                ['ctrlKey', 'altKey', 'metaKey', 'shiftKey'].filter(x => x in e && e[x]).map(x => x).join(' ') +
+                (e.defaultPrevented ? ` defaultPrevented` : ``);
     console.log(msg);
     const div = document.createElement('div');
     div.innerText = msg;
