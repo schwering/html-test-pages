@@ -42,7 +42,7 @@
             script: ``
           },
           'Contenteditable': {
-            html: `<div contenteditable style="width: 10em; height: 2ex; border: 1px solid black; padding: 0.5ex;"></div>`,
+            html: `<div contenteditable style="width: 10em; height: 5ex; border: 1px solid black; padding: 0.5ex;"></div>`,
             script: ``
           },
         };
@@ -90,7 +90,7 @@
             const action = new URL(window.location);
             const html = document.getElementById('code').value;
             const script = document.getElementById('script').value;
-            window.location.href = '?html=' + encodeURIComponent(html) +'&script='+ script;
+            window.location.href = '?html=' + encodeURIComponent(html) + '&script=' + encodeURIComponent(script);
           };
         }
       })();
