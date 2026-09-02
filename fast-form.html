@@ -75,7 +75,10 @@
         script = script || '';
         if (window.location.hash !== '#edit') {
           document.getElementById('html').innerHTML = html;
-          document.getElementById('script').innerText = script;
+          const scriptElement = document.createElement('script');
+          scriptElement.id = 'script';
+          scriptElement.textContent = script;
+          document.getElementById('script').replaceWith(scriptElement);
           edit.onclick = function() {
             window.location.hash = '#edit';
             window.location.reload();
